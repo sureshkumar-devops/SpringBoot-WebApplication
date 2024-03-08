@@ -1,0 +1,54 @@
+pipeline
+{
+    agent any
+    tools
+    {
+      jdk 'JAVA_HOME'
+      maven 'MAVEN_HOME'
+    }	
+    environment
+    {
+      SCANNER_HOME = tool 'sonar-scanner'
+      PROJECT_NAME = 'Coupon-Website'
+    }
+    stages
+    {
+      stage('Git Checkout')
+      {
+         steps
+         {
+            git branch: 'main', changelog: false, poll: false, url: 'https://github.com/sureshkumar-devops/SpringBoot-WebApplication.git'
+         }
+      }
+      stage('Run Test Cases')
+      {
+        steps
+        {
+          sh "mvn test"
+        }
+      }
+      stage('Build and Artifacts')
+      {
+        steps
+        {
+          sh 'mvn clean package'
+        }
+      }
+      stage('SonarQube Static Code Analysis')
+      {
+        steps
+        {
+          script
+          {
+            withSonarQubeEnv('sonar-scanner')
+            {
+              sh ''' $SCANNER_HOME/bin/sonar-scanner\
+                -Dsonar.projectName=Coupon-Website\
+                -Dsonar.java.binaries=. \
+                -Dsonar.projectKey=Coupon-Website '''
+            }
+          }
+        }
+      }
+    }
+}
