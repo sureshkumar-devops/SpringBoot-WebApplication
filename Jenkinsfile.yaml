@@ -20,6 +20,13 @@ pipeline
             git branch: 'main', changelog: false, poll: false, url: 'https://github.com/sureshkumar-devops/SpringBoot-WebApplication.git'
          }
       }
+      stage('Code Compile')
+      {
+        steps
+        {
+          sh 'mvn compile'
+        }
+      }
       stage('Run Test Cases')
       {
         steps
