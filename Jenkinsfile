@@ -52,5 +52,19 @@ pipeline
           }
         }
       }
+      stage('Project-Dependency-Check')
+      {
+        steps
+        {
+          dependencyCheck additionalArguments: '''
+                     -s './'
+                     -o './'
+                     -f 'ALL' 
+                     --prettyPrint''',
+          odcInstallation: 'DP-Check'
+          dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+        }
+      }      
     }
+  }
 }
