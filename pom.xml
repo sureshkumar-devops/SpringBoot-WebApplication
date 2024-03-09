@@ -77,21 +77,17 @@
   <name>maven-releases</name>
   <url>http://20.115.22.29:8081/repository/maven-releases/</url>
 </repository>
-
 </repositories>
-
+         
 <distributionManagement>
   <repository>
     <id>maven-releases</id>
-    <!-- CHANGE HERE by your team Nexus server -->
-    <url>http://20.115.22.29:8081/repository/maven-releases/</url>
+    <url>http://localhost:8081/repository/maven-releases/</url>
   </repository>
   <snapshotRepository>
     <id>maven-snapshots</id>
-    <!-- CHANGE HERE by your team Nexus server -->
-    <url>http://20.115.22.29:8081/repository/maven-releases/</url>
+    <url>http://localhost:8081/repository/maven-releases/</url>
   </snapshotRepository>
 </distributionManagement>
-
 
 </project>
