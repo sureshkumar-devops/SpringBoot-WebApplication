@@ -15,7 +15,7 @@ spec:
    spec:
     containers:
     - name: ekart-container
-      image: lehardocker/couponscode-img:v1.67         
+      image: lehardocker/couponscode-img:v1.22         
       imagePullPolicy: IfNotPresent
       ports:
         - containerPort: 8080
