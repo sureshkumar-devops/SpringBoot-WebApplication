@@ -1,11 +1,6 @@
 pipeline
 {
-    agent any
-    tools
-    {
-      jdk 'JAVA_HOME'
-      maven 'MAVEN_HOME'
-    }	
+    agent any    
     environment
     {
       SCANNER_HOME = tool 'sonar-scanner'
@@ -17,7 +12,7 @@ pipeline
       {
          steps
          {
-            git branch: 'main', changelog: false, poll: false, url: 'https://github.com/sureshkumar-devops/SpringBoot-WebApplication.git'
+            git 'https://github.com/sureshkumar-devops/SpringBoot-WebApplication.git'
          }
       }
       stage('Code Compile')
@@ -49,13 +44,27 @@ pipeline
           {
             withSonarQubeEnv('sonar-scanner')
             {
-              sh ''' $SCANNER_HOME/bin/sonar-scanner\
+              sh "$SCANNER_HOME/bin/sonar-scanner\
                 -Dsonar.projectName=Coupon-Website\
                 -Dsonar.java.binaries=. \
-                -Dsonar.projectKey=Coupon-Website '''
+                -Dsonar.projectKey=Coupon-Website"
             }
           }
         }
       }
+      stage('Project-Dependency-Check')
+      {
+        steps
+        {
+          dependencyCheck additionalArguments: '''
+                     -s './'
+                     -o './'
+                     -f 'ALL' 
+                     --prettyPrint''',
+          odcInstallation: 'DP-Check'
+          dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+        }
+      }      
     }
+  }
 }
