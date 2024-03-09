@@ -1,0 +1,98 @@
+pipeline
+{
+    agent any    
+    environment
+    {
+      SCANNER_HOME = tool 'sonar-scanner'
+      PROJECT_NAME = 'Coupon-Website'      
+    }
+    stages
+    {
+      stage('Git Checkout')
+      {
+         steps
+         {
+            git 'https://github.com/sureshkumar-devops/SpringBoot-WebApplication.git'
+         }
+      }
+      stage('Code Compile')
+      {
+        steps
+        {
+          sh 'mvn compile'
+        }
+      }
+      stage('Run Test Cases')
+      {
+        steps
+        {
+          sh "mvn test"
+        }
+      }      
+      stage('SonarQube Static Code Analysis')
+      {
+        steps
+        {
+          script
+          {
+            withSonarQubeEnv('sonar-scanner')
+            {
+              sh "$SCANNER_HOME/bin/sonar-scanner\
+                -Dsonar.projectName=Coupon-Website\
+                -Dsonar.java.binaries=. \
+                -Dsonar.projectKey=Coupon-Website"
+            }
+          }
+        }
+      }
+      stage('Project-Dependency-Check')
+      {
+        steps
+        {
+          dependencyCheck additionalArguments: '''
+                     -s './'
+                     -o './'
+                     -f 'ALL' 
+                     --prettyPrint''',
+          odcInstallation: 'DP-Check'
+          dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+        }
+      }
+      stage('Build and Artifacts')
+      {
+        steps
+        {
+          sh 'mvn clean package'
+        }
+      }
+      stage('Build Docker Image and Push to DockerHUB')
+      {
+        steps
+        {         
+          withDockerRegistry(credentialsId: 'docker_LoginDetails')          
+          {
+            sh 'docker build -t lehardocker/coupon-website-img:v1.$BUILD_NUMBER .'
+            sh 'docker push lehardocker/coupon-website-img:v1.$BUILD_NUMBER'
+          } 
+        }
+      }
+      stage('Docker Image Scan By Trivy')
+      {
+        steps
+        {
+          sh 'trivy image lehardocker/coupon-website-img:v1.$BUILD_NUMBER'
+        }
+      }
+      stage('Deploy To Tomcat Server')
+      {
+        steps
+        {
+          sh 'sudo cp $WORKSPACE/End%20To%20End%20DevOps%20CI-CD%20Project/target/spring-boot-web.jar /opt/tomcat/webapps/'
+        }
+      }   
+    }
+}
+
+
+
+
