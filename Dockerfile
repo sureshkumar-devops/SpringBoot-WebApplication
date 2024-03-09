@@ -1,5 +1,5 @@
 FROM adoptopenjdk/openjdk11:alpine-jre
-ARG artifact=target/spring-boot-web.war
+ARG artifact=target/*.war
 WORKDIR /opt/app
 COPY ${artifact} app.war
 ENTRYPOINT ["java","-jar","app.war"]
