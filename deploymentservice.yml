@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ekart-deployment
+spec:
+  selector:
+    matchLables:
+      app: ekart
+  replicas: 2
+  template:
+   metadata:
+    labels:
+      app: ekart
+   spec:
+    containers:
+    - name: ekart-container
+      image: lehardocker/couponscode-img:v1.67         
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 8080
+
+  ---
+  apiVersion: v1
+  kind: Service
+  metadata:
+   name: ekart-svc
+  spec:
+    selector:
+      app: ekart
+    ports:
+    - portocol: "TCP"
+      port: 8080
+      targetPort: 8080
+    type: NodePort
+              
